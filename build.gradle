@@ -1,0 +1,98 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.travelbookingsystem'
+description = 'payment-service'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2025.0.0")
+}
+
+dependencies {
+
+//    implementation 'org.springframework.boot:spring-boot-starter'
+//    implementation 'org.springframework.cloud:spring-cloud-function-context'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testCompileOnly 'org.projectlombok:lombok'
+
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder");
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+def checkPropertiesNotEmpty = { String task, def props ->
+    if (props.isEmpty()) {
+        throw new GradleException("task failed: No -P parameters passed...")
+    }
+}
+
+def checkProperty = { String task, String prop, def props ->
+    if(!props.containsKey(prop) || !project.property(prop).toString()) {
+        throw new GradleException("$task failed : $prop is not passed as a parameter...");
+    }
+}
+
+tasks.named('bootBuildImage').configure {
+    doFirst {
+        checkPropertiesNotEmpty(name, project.gradle.startParameter.projectProperties)
+
+        def props = project.gradle.startParameter.projectProperties
+        checkProperty(name, 'version', props)
+
+        if (project.findProperty("publishImage")?.toBoolean()) {
+            ['registryUsername', 'registryToken', 'registryUrl'].each { prop ->
+                checkProperty(name, prop, props)
+            }
+        }
+    }
+
+    builder = "docker.io/paketobuildpacks/builder-jammy-base"
+    version = project.findProperty("version")
+    imageName = "ghcr.io/vasimvahabov/payment-service" + ":" + version
+    publish = project.findProperty("publishImage")?.toBoolean() ?: false
+    environment = [
+            "BP_JVM_VERSION": JavaVersion.current().majorVersion
+    ]
+    verboseLogging = true
+
+    docker {
+        publishRegistry {
+            username = project.findProperty("registryUsername")
+            password = project.findProperty("registryToken")
+            url = project.findProperty("registryUrl")
+        }
+    }
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

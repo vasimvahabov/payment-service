@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: payment-service
+  cloud:
+    function:
+      definition: processPayment|publishPaymentProcessedEvent
+    stream:
+      bindings:
+        processPaymentpublishPaymentProcessedEvent-in-0:
+          destination: flight-booking-payment-processed
+          group: ${spring.application.name}
+        processPaymentpublishPaymentProcessedEvent-out-0:
+          destination: flight-booking-payment-processed-event-published
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user_rabbitmq
+    password: 9BtVYmvlEp
+    connection-timeout: 5s
+
+server:
+  port: 5566
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        cloud:
+#          function: debug
