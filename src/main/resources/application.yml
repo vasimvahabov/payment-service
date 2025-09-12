@@ -7,10 +7,10 @@ spring:
     stream:
       bindings:
         processPaymentpublishPaymentProcessedEvent-in-0:
-          destination: flight-booking-confirmed
+          destination: flight-booking-payment-pending
           group: ${spring.application.name}
         processPaymentpublishPaymentProcessedEvent-out-0:
-          destination: flight-booking-payment-processed-event-published
+          destination: flight-booking-payment-processed
 
   rabbitmq:
     host: localhost
