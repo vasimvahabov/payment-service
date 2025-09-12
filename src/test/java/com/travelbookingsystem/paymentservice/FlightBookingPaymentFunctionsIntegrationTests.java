@@ -1,6 +1,5 @@
 //package com.travelbookingsystem.paymentservice;
 //
-//import com.travelbookingsystem.paymentservice.event.*;
 //import com.travelbookingsystem.paymentservice.event.messages.FlightBookingPaymentProcessedMessage;
 //import com.travelbookingsystem.paymentservice.event.messages.FlightBookingPaymentRequestedMessage;
 //import lombok.AccessLevel;
@@ -16,7 +15,7 @@
 //
 //@FunctionalSpringBootTest
 //@FieldDefaults(level = AccessLevel.PRIVATE)
-//public class FlightBookingFunctionsIntegrationTests {
+//class FlightBookingPaymentFunctionsIntegrationTests {
 //
 //    @Autowired
 //    FunctionCatalog functionCatalog;
@@ -24,13 +23,13 @@
 //    @Test
 //    void processPaymentAndPublishPaymentProcessedEvent() {
 //        Function<FlightBookingPaymentRequestedMessage, Flux<FlightBookingPaymentProcessedMessage>>
-//                composed = functionCatalog.lookup(Function.class, "confirmBooking|sendBookingNotification");
+//                composed = functionCatalog.lookup(Function.class, "processPayment|publishPaymentProcessedEvent");
 //        long flightBookingId = 576;
 //
 //        StepVerifier.create(composed.apply(
 //                new FlightBookingPaymentRequestedMessage(flightBookingId)
-//        )).expectNextMatches(notificationMessage->
-//                notificationMessage.equals(new FlightBookingPaymentProcessedMessage(flightBookingId))
+//        )).expectNextMatches(message->
+//                message.equals(new FlightBookingPaymentProcessedMessage(flightBookingId))
 //        ).verifyComplete();
 //    }
 //

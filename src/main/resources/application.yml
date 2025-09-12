@@ -7,7 +7,7 @@ spring:
     stream:
       bindings:
         processPaymentpublishPaymentProcessedEvent-in-0:
-          destination: flight-booking-payment-processed
+          destination: flight-booking-confirmed
           group: ${spring.application.name}
         processPaymentpublishPaymentProcessedEvent-out-0:
           destination: flight-booking-payment-processed-event-published
