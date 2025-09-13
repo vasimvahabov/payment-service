@@ -23,7 +23,7 @@ public class FlightBookingPaymentFunctions {
     @Bean
     public Function<Flux<Long>, Flux<FlightBookingPaymentProcessedMessage>> publishPaymentProcessedEvent() {
         return bookingIdFlux -> bookingIdFlux.map(id -> {
-            log.info("Payment processed for flight booking ID {}.", id);
+            log.info("Payment processed for flight booking ID {} ...", id);
             return new FlightBookingPaymentProcessedMessage(id);
         });
     }
